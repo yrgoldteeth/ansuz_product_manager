@@ -1,4 +1,23 @@
 class Admin::ProductsController < Admin::BaseController
+  unloadable # This is required if you subclass a controller provided by the base rails app
+  layout 'admin'
+  before_filter :load_product,     :only => [:show, :edit, :update, :destroy]
+  before_filter :load_new_product, :only => [:new, :create]
+  before_filter :load_products,    :only => [:index]
+
+  protected
+  def load_product
+    @product = Ansuz::NFine::Product.find(params[:id])
+  end
+
+  def load_new_product
+    @product = Ansuz::NFine::Product.new(params[:product])
+  end
+
+  def load_products
+    @products = Ansuz::NFine::Product.find(:all, :order => 'created_at DESC')
+  end
+
   # GET /products
   # GET /products.xml
   def index
@@ -45,7 +64,7 @@ class Admin::ProductsController < Admin::BaseController
 
     respond_to do |format|
       if @product.save
-        flash[:notice] = 'Product was successfully created.'
+        flash[:notice] = 'Ansuz::NFine::Product was successfully created.'
         format.html { redirect_to(@product) }
       else
         format.html { render :action => "new" }
@@ -63,7 +82,7 @@ class Admin::ProductsController < Admin::BaseController
   end
 
   def quantity_discounts
-    @quantity_discount = Ansuz::NFine::QuantityDiscount.find(params[:id])
+    @quantity_discount = Ansuz::QuantityDiscount.find(params[:id])
     render :action => "quantity_discounts"
   end
 
@@ -74,7 +93,7 @@ class Admin::ProductsController < Admin::BaseController
 
     respond_to do |format|
       if @product.update_attributes(params[:product])
-        flash[:notice] = 'Product was successfully updated.'
+        flash[:notice] = 'Ansuz::NFine::Product was successfully updated.'
         format.html { redirect_to(@product) }
         format.xml  { head :ok }
       else
