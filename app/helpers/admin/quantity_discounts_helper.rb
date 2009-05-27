@@ -1,2 +1,2 @@
-module QuantityDiscountsHelper
+module Admin::QuantityDiscountsHelper
 end

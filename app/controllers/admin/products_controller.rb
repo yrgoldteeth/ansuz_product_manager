@@ -7,7 +7,7 @@ class Admin::ProductsController < Admin::BaseController
 
   protected
   def load_product
-    @product = Ansuz::NFine::Product.find(params[:id])
+    @product = Ansuz::NFine::Product.find(params[:id], :include => [:quantity_discounts])
   end
 
   def load_new_product
@@ -41,20 +41,6 @@ class Admin::ProductsController < Admin::BaseController
       end
   end
 
-  def create_quantity_discount
-    @product.has_quantity_discount = true
-    @product.save
-    @quantity_discount = @product.quantity_discounts.create
-    render :action => "quantity_discounts" 
-  end
-
-  def quantity_discounts
-    @quantity_discount = Ansuz::QuantityDiscount.find(params[:id])
-    render :action => "quantity_discounts"
-  end
-
-  # PUT /products/1
-  # PUT /products/1.xml
   def update
       if @product.update_attributes(params[:product])
         flash[:notice] = 'Product was successfully updated.'
@@ -65,8 +51,6 @@ class Admin::ProductsController < Admin::BaseController
       end
   end
 
-  # DELETE /products/1
-  # DELETE /products/1.xml
   def destroy
     @product.destroy
     flash[:notice] = "Product was deleted."

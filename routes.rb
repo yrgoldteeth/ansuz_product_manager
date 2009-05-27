@@ -1,3 +1,5 @@
 namespace :admin do |admin|
-  admin.resources :products
+  admin.resources :products, :has_many => [:quantity_discounts]
+  admin.resources :categories
+#  admin.resources :quantity_discounts, :belongs_to => [:products]
 end

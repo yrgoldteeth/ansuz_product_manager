@@ -2,7 +2,6 @@
 <b>Name:</b>
 <%=h @product.name %>
 </p>
-
 <p>
 <b>Unit Price:</b>
 <%=h @product.price %>
@@ -10,27 +9,4 @@
 <p>
 <%= link_to 'Edit Product', edit_admin_product_path(@product) %> 
 </p>
-<% if @product.has_quantity_discount %>
-  <b>Quantity Discounts</b>
-  <table>
-    <thead>
-      <th>Quantity Range</th>
-      <th>Quantity Price</th>
-      <th>Edit</th>
-    </thead>
-    <tbody>
-      <% @quantity_discounts.each do |q| %>
-        <tr>
-          <td><%= h q.quantity_range %></td>
-          <td><%= h q.price %></td>
-          <td><%= link_to ('Edit', :action => 'quantity_discounts', :id => q ) %></td> 
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% else %>
-  <p>
-  <%= link_to 'Add Quantity Discount', :action => 'create_quantity_discount', :id => @product %>
-  </p>
-<% end %>
-
+<%= link_to 'Add Quantity Discount', new_admin_product_quantity_discount_path(@product) %>

@@ -1,0 +1,14 @@
+<p>
+<b>Name:</b>
+<%=h @product.name %>
+</p>
+<p>
+<b>Unit Price:</b>
+<%=h @product.price %>
+</p>
+<% form_for :quantity_discount, :url => admin_product_quantity_discounts_path, :html => {:method => 'put'} do |f| %>
+  <%= render :partial =>'/admin/quantity_discounts/form', :locals => {:f => f} -%>
+  <%= submit_tag("Update Quantity Discount") -%>
+<% end %>
+
+<%= link_to 'Back', admin_products_path %>

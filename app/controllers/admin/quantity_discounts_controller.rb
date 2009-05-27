@@ -1,86 +1,62 @@
-class QuantityDiscountsController < ApplicationController
-  # GET /quantity_discounts
-  # GET /quantity_discounts.xml
+class Admin::QuantityDiscountsController < ApplicationController
+  unloadable # This is required if you subclass a controller provided by the base rails app
+  layout 'admin'
+  before_filter :load_quantity_discount,     :only => [:show, :edit, :update, :destroy]
+  before_filter :load_new_quantity_discount, :only => [:new, :create]
+  before_filter :load_quantity_discounts,    :only => [:index]
+
+  protected
+  def load_quantity_discount
+    @quantity_discount = Ansuz::NFine::QuantityDiscount.find(params[:id], :include => [:product])
+    @product = Ansuz::NFine::Product.find(params[:product_id])
+  end
+
+  def load_new_quantity_discount
+    @quantity_discount = Ansuz::NFine::QuantityDiscount.new(params[:quantity_discount])
+    @product = Ansuz::NFine::Product.find(params[:product_id])
+  end
+
+  def load_quantity_discounts
+    @quantity_discounts = Ansuz::NFine::QuantityDiscount.find(:all, :order => 'created_at DESC')
+  end
+
+  public
   def index
-    @quantity_discounts = QuantityDiscount.find(:all)
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml  { render :xml => @quantity_discounts }
-    end
   end
 
-  # GET /quantity_discounts/1
-  # GET /quantity_discounts/1.xml
   def show
-    @quantity_discount = QuantityDiscount.find(params[:id])
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @quantity_discount }
-    end
   end
 
-  # GET /quantity_discounts/new
-  # GET /quantity_discounts/new.xml
   def new
-    @quantity_discount = QuantityDiscount.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @quantity_discount }
-    end
   end
 
-  # GET /quantity_discounts/1/edit
   def edit
-    @quantity_discount = QuantityDiscount.find(params[:id])
   end
 
-  # POST /quantity_discounts
-  # POST /quantity_discounts.xml
   def create
-    @quantity_discount = QuantityDiscount.new(params[:quantity_discount])
-
-    respond_to do |format|
-      if @quantity_discount.save
-        flash[:notice] = 'QuantityDiscount was successfully created.'
-        format.html { redirect_to(@quantity_discount) }
-        format.xml  { render :xml => @quantity_discount, :status => :created, :location => @quantity_discount }
-      else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @quantity_discount.errors, :status => :unprocessable_entity }
-      end
+    if @quantity_discount.save
+      flash[:notice] = 'Quantity Discount was successfully created.'
+      redirect_to admin_products_path
+    else
+      flash.now[:error] = "There was a problem creating the Quantity Discount.  Please try again."
+      render :action => "new" 
     end
   end
 
-  # PUT /quantity_discounts/1
-  # PUT /quantity_discounts/1.xml
   def update
-    @quantity_discount = QuantityDiscount.find(params[:id])
-
-    respond_to do |format|
-      if @quantity_discount.update_attributes(params[:quantity_discount])
-        @product = Product.find(@quantity_discount.product_id)
-        flash[:notice] = 'QuantityDiscount was successfully updated.'
-        format.html { redirect_to(@product) }
-        format.xml  { head :ok }
-      else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @quantity_discount.errors, :status => :unprocessable_entity }
-      end
+    if @quantity_discount.update_attributes(params[:quantity_discount])
+      @product = Ansuz::NFine::Product.find(@quantity_discount.quantity_discount_id)
+      flash[:notice] = 'Ansuz::NFine::QuantityDiscount was successfully updated.'
+      redirect_to  admin_product_path(@product)
+    else
+      flash.now[:error] = "There was a problem updating the Quantity Discount.  Please try again."
+      render :action => "edit" 
     end
   end
 
-  # DELETE /quantity_discounts/1
-  # DELETE /quantity_discounts/1.xml
   def destroy
-    @quantity_discount = QuantityDiscount.find(params[:id])
     @quantity_discount.destroy
-
-    respond_to do |format|
-      format.html { redirect_to(quantity_discounts_url) }
-      format.xml  { head :ok }
-    end
+    flash[:notice] = "Product's Quantity Discount was deleted."
+    redirect_to admin_products_path
   end
 end

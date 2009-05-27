@@ -1,8 +1,8 @@
 module Ansuz
   module NFine
     class Product < ActiveRecord::Base
-      has_and_belongs_to_many :categories
-      has_many  :quantity_discounts, :dependent => :destroy
+      has_and_belongs_to_many :categories, :class_name => 'Ansuz::NFine::Category'
+      has_many  :quantity_discounts, :class_name => 'Ansuz::NFine::QuantityDiscount', :dependent => :destroy
       validates_presence_of  :name
 
       def minimum_discount_quantity
