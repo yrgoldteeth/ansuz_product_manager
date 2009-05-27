@@ -17,7 +17,8 @@ class Admin::QuantityDiscountsController < ApplicationController
   end
 
   def load_quantity_discounts
-    @quantity_discounts = Ansuz::NFine::QuantityDiscount.find(:all, :order => 'created_at DESC')
+    @quantity_discounts = Ansuz::NFine::QuantityDiscount.find_all_by_product_id(params[:product_id])
+    @product = Ansuz::NFine::Product.find(params[:product_id])
   end
 
   public
@@ -45,9 +46,9 @@ class Admin::QuantityDiscountsController < ApplicationController
 
   def update
     if @quantity_discount.update_attributes(params[:quantity_discount])
-      @product = Ansuz::NFine::Product.find(@quantity_discount.quantity_discount_id)
+#      @product = Ansuz::NFine::Product.find(@quantity_discount.quantity_discount_id)
       flash[:notice] = 'Ansuz::NFine::QuantityDiscount was successfully updated.'
-      redirect_to  admin_product_path(@product)
+      redirect_to  admin_products_path
     else
       flash.now[:error] = "There was a problem updating the Quantity Discount.  Please try again."
       render :action => "edit" 
