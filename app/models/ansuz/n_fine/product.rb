@@ -1,5 +1,5 @@
 module Ansuz
-  module NDFine
+  module NFine
     class Product < ActiveRecord::Base
       has_and_belongs_to_many :categories
       has_many  :quantity_discounts, :dependent => :destroy

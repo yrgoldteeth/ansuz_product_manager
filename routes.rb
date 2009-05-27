@@ -1,3 +1,3 @@
 namespace :admin do |admin|
-  admin.resouces :ansuz_products
+  admin.resources :products
 end

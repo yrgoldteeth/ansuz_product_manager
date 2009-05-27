@@ -2,7 +2,7 @@ class Admin::ProductsController < Admin::BaseController
   # GET /products
   # GET /products.xml
   def index
-    @products = Ansuz::Product.find(:all)
+    @products = Ansuz::NFine::Product.find(:all)
 
     respond_to do |format|
       format.html # index.html.erb
@@ -13,7 +13,7 @@ class Admin::ProductsController < Admin::BaseController
   # GET /products/1
   # GET /products/1.xml
   def show
-    @product = Ansuz::Product.find(params[:id])
+    @product = Ansuz::NFine::Product.find(params[:id])
     @quantity_discounts = @product.quantity_discounts
 
     respond_to do |format|
@@ -25,7 +25,7 @@ class Admin::ProductsController < Admin::BaseController
   # GET /products/new
   # GET /products/new.xml
   def new
-    @product = Ansuz::Product.new
+    @product = Ansuz::NFine::Product.new
 
     respond_to do |format|
       format.html # new.html.erb
@@ -35,17 +35,17 @@ class Admin::ProductsController < Admin::BaseController
 
   # GET /products/1/edit
   def edit
-    @product = Ansuz::Product.find(params[:id])
+    @product = Ansuz::NFine::Product.find(params[:id])
   end
 
   # POST /products
   # POST /products.xml
   def create
-    @product = Ansuz::Product.new(params[:product])
+    @product = Ansuz::NFine::Product.new(params[:product])
 
     respond_to do |format|
       if @product.save
-        flash[:notice] = 'Ansuz::Product was successfully created.'
+        flash[:notice] = 'Product was successfully created.'
         format.html { redirect_to(@product) }
       else
         format.html { render :action => "new" }
@@ -55,7 +55,7 @@ class Admin::ProductsController < Admin::BaseController
   end
 
   def create_quantity_discount
-    @product = Ansuz::Product.find(params[:id])
+    @product = Ansuz::NFine::Product.find(params[:id])
     @product.has_quantity_discount = true
     @product.save
     @quantity_discount = @product.quantity_discounts.create
@@ -63,18 +63,18 @@ class Admin::ProductsController < Admin::BaseController
   end
 
   def quantity_discounts
-    @quantity_discount = Ansuz::QuantityDiscount.find(params[:id])
+    @quantity_discount = Ansuz::NFine::QuantityDiscount.find(params[:id])
     render :action => "quantity_discounts"
   end
 
   # PUT /products/1
   # PUT /products/1.xml
   def update
-    @product = Ansuz::Product.find(params[:id])
+    @product = Ansuz::NFine::Product.find(params[:id])
 
     respond_to do |format|
       if @product.update_attributes(params[:product])
-        flash[:notice] = 'Ansuz::Product was successfully updated.'
+        flash[:notice] = 'Product was successfully updated.'
         format.html { redirect_to(@product) }
         format.xml  { head :ok }
       else
@@ -87,7 +87,7 @@ class Admin::ProductsController < Admin::BaseController
   # DELETE /products/1
   # DELETE /products/1.xml
   def destroy
-    @product = Ansuz::Product.find(params[:id])
+    @product = Ansuz::NFine::Product.find(params[:id])
     @product.destroy
 
     respond_to do |format|
