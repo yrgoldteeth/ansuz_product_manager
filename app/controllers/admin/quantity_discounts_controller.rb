@@ -35,9 +35,10 @@ class Admin::QuantityDiscountsController < ApplicationController
   end
 
   def create
+    @quantity_discount.product_id = @product.id
     if @quantity_discount.save
       flash[:notice] = 'Quantity Discount was successfully created.'
-      redirect_to admin_products_path
+      redirect_to  admin_product_path(@product)
     else
       flash.now[:error] = "There was a problem creating the Quantity Discount.  Please try again."
       render :action => "new" 
@@ -46,9 +47,8 @@ class Admin::QuantityDiscountsController < ApplicationController
 
   def update
     if @quantity_discount.update_attributes(params[:quantity_discount])
-#      @product = Ansuz::NFine::Product.find(@quantity_discount.quantity_discount_id)
       flash[:notice] = 'Ansuz::NFine::QuantityDiscount was successfully updated.'
-      redirect_to  admin_products_path
+      redirect_to  admin_product_path(@product)
     else
       flash.now[:error] = "There was a problem updating the Quantity Discount.  Please try again."
       render :action => "edit" 

@@ -34,7 +34,7 @@ class Admin::ProductsController < Admin::BaseController
   def create
       if @product.save
         flash[:notice] = 'Product was successfully created.'
-        redirect_to admin_products_path
+        redirect_to admin_product_path(@product)
       else
         flash.now[:error] = "There was a problem creating the Product.  Please try again."
         render :action => "new" 
