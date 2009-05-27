@@ -1,13 +1,7 @@
 AnsuzProductManager
 ===================
+This is a product management plugin for Ansuz.  
 
-Introduction goes here.
-
-
-Example
-=======
-
-Example goes here.
-
-
-Copyright (c) 2009 [name of plugin creator], released under the MIT license
+Special installation instructions:
+1.  Make sure the plugin is located at /vendor/plugins/ansuz_product_manager
+2.  Add this line to the ansuz installation config/routes.rb file:   map.from_plugin :ansuz_product_manager
