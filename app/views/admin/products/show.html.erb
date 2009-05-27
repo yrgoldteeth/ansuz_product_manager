@@ -8,7 +8,7 @@
 <%=h @product.price %>
 </p>
 <p>
-<%= link_to 'Edit Product', edit_product_path(@product) %> 
+<%= link_to 'Edit Product', edit_admin_product_path(@product) %> 
 </p>
 <% if @product.has_quantity_discount %>
   <b>Quantity Discounts</b>

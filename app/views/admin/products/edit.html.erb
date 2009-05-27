@@ -1,24 +1,4 @@
-<h1>Editing product</h1>
-
-<% form_for(@product) do |f| %>
-  <%= f.error_messages %>
-
-  <p>
-    <%= f.label :name %><br />
-    <%= f.text_field :name %>
-  </p>
-  <p>
-    <%= f.label :price %><br />
-    <%= f.text_field :price %>
-  </p>
-  <p>
-    <%= f.label :has_quantity_discount %><br />
-    <%= f.check_box :has_quantity_discount %>
-  </p>
-  <p>
-    <%= f.submit "Update" %>
-  </p>
+<% form_for :product, :url => admin_product_path(@product), :html => {:method => :put } do |f| %>
+  <%= render :partial =>'/admin/products/form', :locals => {:f => f} -%>
+  <%= submit_tag("Update Product") -%>
 <% end %>
-
-<%= link_to 'Show', @product %> |
-<%= link_to 'Back', products_path %>
