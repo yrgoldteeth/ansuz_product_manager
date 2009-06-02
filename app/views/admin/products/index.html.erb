@@ -1,22 +1,30 @@
-<h1>Listing products</h1>
-
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Price</th>
-  </tr>
-
-<% for product in @products %>
-  <tr>
-    <td><%=h product.name %></td>
-    <td><%=h product.price %></td>
-    <td><%= link_to 'Show', admin_product_path(product) %></td>
-    <td><%= link_to 'Edit', edit_admin_product_path(product) %></td>
-    <td><%= link_to 'Destroy', admin_product_path(product), :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
-</table>
-
-<br />
-
-<%= link_to 'New product', new_admin_product_path %>
+<%= title "Products" %>
+<% content_for :sidebar do -%>
+  <%= link_to "Add Product", new_admin_product_path, :class => 'button icon add' -%>
+<% end -%>
+<div class='fullwidth'>
+  <table class='subdued'>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Unit Price</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for product in @products %>
+        <tr class='<%= cycle('odd','even') -%>'>
+          <td><%= link_to product.name, edit_admin_product_path(product) %></td>
+          <td><%= product.price %></td>
+          <td>
+            <ul class='admin_actions'>
+              <li><%= link_to famfamfam_icon("pencil"), edit_admin_product_path(product) -%></li>
+              <li><%= link_to famfamfam_icon("package"), admin_product_quantity_discounts_path(product) -%>
+              <li><%= link_to famfamfam_icon("delete"), admin_product_path(product), :confirm => 'Are you sure you want to delete this product?', :method => :delete -%></li>
+            </ul>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

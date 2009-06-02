@@ -5,15 +5,19 @@ module Ansuz
       has_many  :quantity_discounts, :class_name => 'Ansuz::NFine::QuantityDiscount', :dependent => :destroy
       validates_presence_of  :name
 
-      def minimum_discount_quantity
+      #creates a range for the low and high end of product's existing quantity discounts
+      def existing_discount_quantity_range
         product_quantity_discounts = self.quantity_discounts
         minimum_quantity = []
+        maximum_quantity = []
         product_quantity_discounts.each do |q|
           minimum_quantity << q.low_quantity
+          maximum_quantity << q.high_quantity
         end
-        return minimum_quantity.sort[0]
+        return minimum_quantity.sort.first..maximum_quantity.sort.last
       end
-
+      
+      #returns product's price for a given quantity
       def quantity_price (quantity)
         if self.has_quantity_discount? && self.minimum_discount_quantity < quantity
           product_quantity_discounts = self.quantity_discounts
