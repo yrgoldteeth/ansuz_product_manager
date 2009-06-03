@@ -1,4 +1,3 @@
-Ansuz::PluginManagerInstance.register_plugin(Ansuz::NFine::Product)
-Ansuz::PluginManagerInstance.register_plugin(Ansuz::NFine::QuantityDiscount)
-Ansuz::PluginManagerInstance.register_plugin(Ansuz::NFine::Category)
+#Register the admin menu instances for managing products and creating a new product.
 Ansuz::PluginManagerInstance.register_admin_menu_entry('Manage', 'Products', '/admin/products')
+Ansuz::PluginManagerInstance.register_admin_menu_entry('Create', 'Product', '/admin/products/new')
