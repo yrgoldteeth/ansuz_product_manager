@@ -1,5 +1,5 @@
 <%= title "Add New Category" %>
-<% form_for :category, :url => admin_category_path(@category) do |f| %>
+<% form_for :category, :url => admin_categories_path do |f| %>
   <%= render :partial =>'/admin/categories/form', :locals => {:f => f} -%>
   <%= submit_tag("Create New Category") -%> or <%= link_to 'Cancel', admin_categories_path %>
 <% end %>
