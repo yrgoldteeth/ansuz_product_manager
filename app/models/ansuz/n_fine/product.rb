@@ -1,8 +1,7 @@
 module Ansuz
   module NFine
     class Product < ActiveRecord::Base
-      #TODO change habtm to a has_many :through
-      has_and_belongs_to_many :categories, :class_name => 'Ansuz::NFine::Category'
+      belongs_to :category, :class_name => 'Ansuz::NFine::Category'
       has_many  :quantity_discounts, :class_name => 'Ansuz::NFine::QuantityDiscount', :dependent => :destroy
       has_attached_file  :image
       validates_presence_of  :name

@@ -1,2 +1,2 @@
-module CategoriesHelper
+module Admin::CategoriesHelper
 end
