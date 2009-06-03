@@ -18,9 +18,9 @@
           <td><%= product.price %></td>
           <td>
             <ul class='admin_actions'>
-              <li><%= link_to famfamfam_icon("pencil"), edit_admin_product_path(product) -%></li>
-              <li><%= link_to famfamfam_icon("package"), admin_product_quantity_discounts_path(product) -%>
-              <li><%= link_to famfamfam_icon("delete"), admin_product_path(product), :confirm => 'Are you sure you want to delete this product?', :method => :delete -%></li>
+              <li><%= link_to famfamfam_icon("pencil"), edit_admin_product_path(product), :title => 'Edit this product' -%></li>
+              <li><%= link_to famfamfam_icon("package"), admin_product_quantity_discounts_path(product), :title => 'Manage quantity discounting for this product'-%>
+              <li><%= link_to famfamfam_icon("delete"), admin_product_path(product), :confirm => 'Are you sure you want to delete this product?', :method => :delete, :title => 'Delete this product' -%></li>
             </ul>
           </td>
         </tr>
