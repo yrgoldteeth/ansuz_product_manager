@@ -15,7 +15,7 @@
       <% for quantity_discount in @quantity_discounts %>
         <tr class='<%= cycle('odd','even') -%>'>
           <td><%= quantity_discount.quantity_range %></td>
-          <td><%= quantity_discount.price %></td>
+          <td><%= number_to_currency(quantity_discount.price) %></td>
           <td>
             <ul class='admin_actions'>
               <li><%= link_to famfamfam_icon("pencil"), edit_admin_product_quantity_discount_path(quantity_discount.product_id, quantity_discount) -%></li>

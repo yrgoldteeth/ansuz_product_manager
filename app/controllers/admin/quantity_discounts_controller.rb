@@ -35,12 +35,12 @@ class Admin::QuantityDiscountsController < ApplicationController
   end
 
   def create
-    if @product.existing_discount_quantity_range.include?(@quantity_discount.low_quantity || @quantity_discount.high_quantity)
+    if !@product.quantity_discounts.empty? && @product.existing_discount_quantity_range.include?(@quantity_discount.low_quantity || @quantity_discount.high_quantity)
       flash.now[:error] = "The quantity discount you entered already exists for this product.  Please try again."
       render :action => "new"
     else
+      @quantity_discount.product = @product
       @quantity_discount.save
-      @product.has_quantity_discount!
       flash[:notice] = 'Quantity Discount was successfully created.'
       redirect_to admin_products_path
     end

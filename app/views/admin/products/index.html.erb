@@ -3,28 +3,33 @@
   <%= link_to "Add Product", new_admin_product_path, :class => 'button icon add' -%>
 <% end -%>
 <div class='fullwidth'>
-  <table class='subdued'>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Unit Price</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% for product in @products %>
-        <tr class='<%= cycle('odd','even') -%>'>
-          <td><%= link_to product.name, edit_admin_product_path(product) %></td>
-          <td><%= product.price %></td>
-          <td>
-            <ul class='admin_actions'>
-              <li><%= link_to famfamfam_icon("pencil"), edit_admin_product_path(product), :title => 'Edit this product' -%></li>
-              <li><%= link_to famfamfam_icon("package"), admin_product_quantity_discounts_path(product), :title => 'Manage quantity discounting for this product'-%>
-              <li><%= link_to famfamfam_icon("delete"), admin_product_path(product), :confirm => 'Are you sure you want to delete this product?', :method => :delete, :title => 'Delete this product' -%></li>
-            </ul>
-          </td>
+  <% for category in @categories %>
+    <h3><%= category.name %></h3>
+    <table class='subdued'>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Unit Price</th>
+          <th></th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% category.products.each do |product| %>
+          <tr class='<%= cycle('odd','even') -%>'>
+            <td><%= link_to product.name, edit_admin_product_path(product) %></td>
+            <td><%= product.description %></td>
+            <td><%= number_to_currency(product.price) %></td>
+            <td>
+              <ul class='admin_actions'>
+                <li><%= link_to famfamfam_icon("pencil"), edit_admin_product_path(product), :title => 'Edit this product' -%></li>
+                <li><%= link_to famfamfam_icon("package"), admin_product_quantity_discounts_path(product), :title => 'Manage quantity discounting for this product'-%>
+                <li><%= link_to famfamfam_icon("delete"), admin_product_path(product), :confirm => 'Are you sure you want to delete this product?', :method => :delete, :title => 'Delete this product' -%></li>
+              </ul>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
 </div>

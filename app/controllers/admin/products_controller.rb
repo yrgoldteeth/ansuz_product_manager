@@ -17,8 +17,8 @@ class Admin::ProductsController < Admin::BaseController
   end
 
   def load_products
-    @products = Ansuz::NFine::Product.find(:all, :order => 'created_at DESC')
-    @categories = Ansuz::NFine::Category.find(:all)
+#    @products = Ansuz::NFine::Product.find(:all, :order => 'created_at DESC')
+    @categories = Ansuz::NFine::Category.find(:all, :include => [:products])
   end
 
   public

@@ -20,7 +20,7 @@ module Ansuz
       
       #returns product's price for a given quantity
       def quantity_price (quantity)
-        if self.has_quantity_discount? && self.minimum_discount_quantity < quantity
+        if !self.quantity_discounts.empty? && self.minimum_discount_quantity < quantity
           product_quantity_discounts = self.quantity_discounts
           product_quantity_discounts.each do |q|
             quantity_range = q.low_quantity..q.high_quantity
@@ -31,10 +31,6 @@ module Ansuz
         else
           return self.price
         end
-      end
-
-      def has_quantity_discount!
-        self.has_quantity_discount = true
       end
 
     end
