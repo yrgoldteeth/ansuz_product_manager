@@ -17,20 +17,26 @@ module Ansuz
         end
         return minimum_quantity.sort.first..maximum_quantity.sort.last
       end
-      
-      #returns product's price for a given quantity
+
+      #returns product's price for a given quantity.  
       def quantity_price (quantity)
-        if !self.quantity_discounts.empty? && self.minimum_discount_quantity < quantity
-          product_quantity_discounts = self.quantity_discounts
-          product_quantity_discounts.each do |q|
+        if !self.quantity_discounts.empty? && self.existing_discount_quantity_range.min < quantity && self.existing_discount_quantity_range.max > quantity
+          self.quantity_discounts.each do |q|
             quantity_range = q.low_quantity..q.high_quantity
             if quantity_range.include?(quantity)
               return q.price
             end
           end
-        else
+        elsif !self.quantity_discounts.empty? && self.existing_discount_quantity_range.max < quantity #if quantity is greater than max discount_qty_range, return maximum_discount_price 
+          return self.maximum_discount_price
+        else #if the quantity is less than the minimum of the existing_discount_quantity_range, return unit price.
           return self.price
         end
+      end
+
+      #returns quantity price of existing_discount_quantity_range.max 
+      def maximum_discount_price
+       return self.quantity_price(self.existing_discount_quantity_range.max)
       end
 
     end
