@@ -1,21 +1,24 @@
 class Admin::ProductsController < Admin::BaseController
   unloadable # This is required if you subclass a controller provided by the base rails app
   layout 'admin'
-  before_filter :load_product,     :only => [:show, :edit, :update, :destroy, :create_quantity_discount]
+  before_filter :load_product,     :only => [:show, :edit, :update, :destroy]
   before_filter :load_new_product, :only => [:new, :create]
   before_filter :load_products,    :only => [:index]
 
   protected
   def load_product
     @product = Ansuz::NFine::Product.find(params[:id], :include => [:quantity_discounts])
+    @categories = Ansuz::NFine::Category.find(:all)
   end
 
   def load_new_product
     @product = Ansuz::NFine::Product.new(params[:product])
+    @categories = Ansuz::NFine::Category.find(:all)
   end
 
   def load_products
     @products = Ansuz::NFine::Product.find(:all, :order => 'created_at DESC')
+    @categories = Ansuz::NFine::Category.find(:all)
   end
 
   public
