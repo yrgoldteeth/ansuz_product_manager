@@ -4,7 +4,6 @@ module Ansuz
       belongs_to :category, :class_name => 'Ansuz::NFine::Category'
       has_many  :quantity_discounts, :class_name => 'Ansuz::NFine::QuantityDiscount', :dependent => :destroy
       has_attached_file  :image
-      validates_presence_of  :name
 
       #creates a range for the low and high end of product's existing quantity discounts
       def existing_discount_quantity_range
@@ -16,6 +15,12 @@ module Ansuz
           maximum_quantity << q.high_quantity
         end
         return minimum_quantity.sort.first..maximum_quantity.sort.last
+      end
+      
+      #returns quantity range for 1 to the minimum discount quantity - 1
+      def unit_price_quantity_range
+        top_quantity = existing_discount_quantity_range.min - 1
+        return '1 - ' + top_quantity.to_s
       end
 
       #returns product's price for a given quantity.  

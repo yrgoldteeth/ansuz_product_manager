@@ -10,7 +10,7 @@ class ProductsController < ApplicationController
 
   def load_products
 #    @products = Ansuz::NFine::Product.find(:all, :order => 'created_at DESC')
-    @categories = Ansuz::NFine::Category.find(:all, :include => [:products, :quantity_discounts])
+    @categories = Ansuz::NFine::Category.find(:all, :include => [:products, :quantity_discounts], :conditions => ['products.active = ?', true])
   end
 
   public 
