@@ -1,6 +1,6 @@
 <%= title "Product Categories" %>
 <% content_for :sidebar do -%>
-  <%= link_to "Add Product Category", new_admin_category_path, :class => 'button icon add' -%>
+  <%= render :partial => 'admin/layouts/product_sidebar' -%>
 <% end -%>
 <div class='fullwidth'>
   <table class='subdued'>
