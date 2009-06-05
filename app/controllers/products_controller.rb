@@ -1,4 +1,4 @@
-class ProductsController < Admin::BaseController
+class ProductsController < Admin::BaseController #TODO fix this class inheritance to not inherit the admin controller.  fucking duh.
   unloadable # This is required if you subclass a controller provided by the base rails app
   before_filter :load_product,     :only => [:show] 
   before_filter :load_products,    :only => [:index]
@@ -13,7 +13,7 @@ class ProductsController < Admin::BaseController
     @categories = Ansuz::NFine::Category.find(:all, :include => [:products, :quantity_discounts])
   end
 
-  public
+  public #TODO for reals.  put a format do statement like in the blog plugin.  
   def index
   end
 

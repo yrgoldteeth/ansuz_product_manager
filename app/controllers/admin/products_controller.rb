@@ -37,7 +37,7 @@ class Admin::ProductsController < Admin::BaseController
   def create
       if @product.save
         flash[:notice] = 'Product was successfully created.'
-        redirect_to admin_product_path(@product)
+        redirect_to admin_products_path
       else
         flash.now[:error] = "There was a problem creating the Product.  Please try again."
         render :action => "new" 
@@ -47,7 +47,7 @@ class Admin::ProductsController < Admin::BaseController
   def update
       if @product.update_attributes(params[:product])
         flash[:notice] = 'Product was successfully updated.'
-        redirect_to admin_product_path(@product)
+        redirect_to admin_products_path
       else
         flash.now[:error] = "There was a problem updating the Product.  Please Try again."
         render :action => 'edit'
