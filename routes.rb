@@ -4,3 +4,4 @@ namespace :admin do |admin|
 #  admin.resources :quantity_discounts, :belongs_to => [:products]
 end
 resources :products
+resources :carts, :has_many => [:line_items]

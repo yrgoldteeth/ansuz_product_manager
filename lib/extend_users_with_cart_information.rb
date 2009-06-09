@@ -5,6 +5,15 @@ module Ansuz
         base.class_eval do
           has_one :cart_user_information, :class_name => "Ansuz::NFine::CartUserInformation"
           has_many :carts, :class_name => "Ansuz::NFine::Cart"
+
+          def current_cart
+            cart = self.carts.find(:first, :order => 'id desc')
+            unless cart && #!cart.ordered?   
+              cart = Cart.create(:user_id => self.id)
+            end
+            cart
+          end
+
         end
       end
     end
