@@ -1,13 +1,18 @@
 class CartsController < ApplicationController
+  unloadable # This is required if you subclass a controller provided by the base rails app
   before_filter :login_required#, :only => [:ordered, :previous]
-  before_filter :load_current_cart, :only => [:show, :checkout, :add, :update, :apply_coupon]
+  before_filter :load_current_cart, :only => [:show, :checkout, :index, :add, :update, :apply_coupon]
   before_filter :load_cart,  :only => [:previous]
   before_filter :load_carts, :only => [:ordered]
 #  helper :carts
 
-private
+  private
   def load_current_cart
-    @cart = current_cart
+    if current_user.carts.find(:first, :order=> 'id desc')
+      @cart = current_user.carts.find(:first, :order => 'id desc')
+    else
+      @cart = Ansuz::NFine::Cart.create(:user_id => current_user.id)
+    end
   end
 
   def load_carts
@@ -18,7 +23,6 @@ private
   end
 public
   def index
-    redirect_to :action => 'show'
   end
 
   # GET /cart/1
@@ -81,45 +85,67 @@ public
   end
 
   def add
-    unless params[:quantity].blank?
-      params[:product_id].each_with_index do |product_id, i|
-        qty      = params[:quantity][i].to_i
-        photo_id = params[:photo_id][i]
-        if params[:configuration]
-          configuration = params[:configuration][i]
-        end
-        if qty > 0
-          product = Product.find(product_id)
-          options = {}
-
-          # NOTE: There were bugs associated with adding the same product, two
-          # differing photos.  This is just not going to happen for now.
-=begin
-          # If the item is already in the cart, just add to the quantity
-          if @cart.products.include?(product)
-            old_line_item = @cart.line_item_for(product)
-            # We'll only allow adding quantity for basic products, not configured ones, this way
-            unless old_line_item.configuration
-              qty = old_line_item.quantity + qty
-              old_line_item.destroy
-            end
-          end
-=end
-
-          options[:quantity] = qty
-          options[:configuration] = configuration if params[:configuration]
-          options[:photo_id] = photo_id
-
-          logger.info "Adding product: #{product.inspect}.  Quantity: #{qty}."
-          @cart.add(product, options)
-        end
-        flash[:notice] = 'Successfully added item(s) to the cart.'
+      product_params = params[:product]
+      qty = product_params[:qty].to_i
+      product_id = product_params[:id]
+      if product_params[:details]
+        details = product_params[:details]
       end
-    else
-      flash[:error] = "There was a problem adding your item(s) to the cart."
-    end
-    redirect_back
-  end
+
+      if qty > 0
+        product = Ansuz::NFine::Product.find(product_id, :include => [:quantity_discounts])
+        price = product.quantity_price(qty)
+        options = {}
+        options[:price_in_cents] = (price * 100).to_i
+        options[:quantity] = qty
+        options[:product_id] = product_id
+        options[:configuration] = details
+          logger.info "Adding product: #{product.inspect}.  Quantity: #{qty}."
+        @cart.add(product, options)
+      end
+      redirect_to :controller => 'products'
+  end 
+
+    
+#    unless params[:qty].blank?
+#      params[:product_id].each_with_index do |product_id, i|
+#        qty      = params[:quantity][i].to_i
+#        photo_id = params[:photo_id][i]
+#        if params[:configuration]
+#          configuration = params[:configuration][i]
+#        end
+#        if qty > 0
+#          product = Product.find(product_id)
+#          options = {}
+#
+#          # NOTE: There were bugs associated with adding the same product, two
+#          # differing photos.  This is just not going to happen for now.
+#=begin
+#          # If the item is already in the cart, just add to the quantity
+#          if @cart.products.include?(product)
+#            old_line_item = @cart.line_item_for(product)
+#            # We'll only allow adding quantity for basic products, not configured ones, this way
+#            unless old_line_item.configuration
+#              qty = old_line_item.quantity + qty
+#              old_line_item.destroy
+#            end
+#          end
+#=end
+#
+#          options[:quantity] = qty
+#          options[:configuration] = configuration if params[:configuration]
+#          options[:photo_id] = photo_id
+#
+#          logger.info "Adding product: #{product.inspect}.  Quantity: #{qty}."
+#          @cart.add(product, options)
+#        end
+#        flash[:notice] = 'Successfully added item(s) to the cart.'
+#      end
+#    else
+#      flash[:error] = "There was a problem adding your item(s) to the cart."
+#    end
+#    redirect_back
+#  end
 
   def track
     if params[:q]

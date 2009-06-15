@@ -8,8 +8,8 @@ module Ansuz
 
           def current_cart
             cart = self.carts.find(:first, :order => 'id desc')
-            unless cart && #!cart.ordered?   
-              cart = Cart.create(:user_id => self.id)
+            unless cart  
+              cart = Ansuz::NFine::Cart.create(:user_id => self.id)
             end
             cart
           end

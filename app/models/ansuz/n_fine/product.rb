@@ -4,6 +4,7 @@ module Ansuz
       belongs_to :category, :class_name => 'Ansuz::NFine::Category'
       has_many  :quantity_discounts, :class_name => 'Ansuz::NFine::QuantityDiscount', :dependent => :destroy
       has_attached_file  :image
+      attr_accessor :qty, :details
 
       #creates a range for the low and high end of product's existing quantity discounts
       def existing_discount_quantity_range

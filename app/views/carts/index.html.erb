@@ -1,0 +1,35 @@
+<h2>My Cart</h2>
+<div class="price-list-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Name</th>
+        <th>Quantity</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @cart.line_items.each do |li| %>
+        <tr>
+          <td><%= li.product.category.name %></td>
+          <td><%= li.product.name %></td>
+          <td><%= li.quantity %></td>
+          <td><%= li.amount %></td>
+        </tr>
+      <% end %>
+      <tr>
+        <td></td>
+        <td></td>
+        <td>Subtotal</td>
+        <td><%= @cart.subtotal %></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td>TOTAL</td>
+        <td><%= @cart.total %></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
