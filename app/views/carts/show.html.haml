@@ -1,0 +1,9 @@
+%br
+%h2.cart-head Your Shopping Cart
+#cart
+  - if @cart.line_items.any?
+    = render :partial => 'table', :locals => { :cart => @cart }
+  - else
+    %p
+      Your cart is currently empty.
+.clear

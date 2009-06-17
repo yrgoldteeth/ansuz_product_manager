@@ -1,0 +1,28 @@
+- include_actions = false if !local_assigns.include?(:include_actions)
+
+%table.cart
+  %thead
+    %th IMAGE
+    %th DESCRIPTION
+    %th.number PRICE 
+    %th.number QTY 
+    %th.number SUBTOTAL
+    %th
+  %tbody
+    - cart.line_items.each do |line_item|
+      - do_include_actions = line_item.special? ? false : include_actions
+      = row_for_line_item(line_item, :include_actions => do_include_actions)
+ 
+.summary
+  - %w(subtotal shipping_rate rush_rate sales_tax total).each do |field|
+    - field_class = field
+    - value = cart.send(field)
+    - if field == "rush_rate"
+      - field = "RUSH ORDER Processing Charge"
+    - else
+      - field = field.humanize
+    - if value && value > 0
+      %p{ :class => "cart_amount #{field_class}" }
+        %b= field + ":"
+        = number_to_currency(value)
+.clear

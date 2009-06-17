@@ -4,6 +4,7 @@ class CartsController < ApplicationController
   before_filter :load_current_cart, :only => [:show, :checkout, :index, :add, :update, :apply_coupon]
   before_filter :load_cart,  :only => [:previous]
   before_filter :load_carts, :only => [:ordered]
+  before_filter :load_active_merchant_credit_card, :only => [:checkout]
 #  helper :carts
 
   private
@@ -19,10 +20,24 @@ class CartsController < ApplicationController
   def load_carts
     @carts = current_user.carts.ordered.find(:all)
   end
+
   def load_cart
     @cart = current_user.carts.find(params[:id], :include => [:line_items, { :person => [:addresses] }])
   end
-public
+
+  def load_active_merchant_credit_card
+    @active_merchant_credit_card = ActiveMerchant::Billing::CreditCard.new(
+      params[:active_merchant_credit_card]
+    )
+    if @cart.proper_person && @cart.proper_person.billing_address
+      @active_merchant_credit_card.first_name = @cart.proper_person.billing_address.first_name
+      @active_merchant_credit_card.last_name = @cart.proper_person.billing_address.last_name
+    end
+    @active_merchant_credit_card.type ||= "visa"
+    params[:active_merchant_credit_card] ||= { :type => 'visa' }
+  end
+
+  public
   def index
     redirect_to :action => 'show'
   end
@@ -49,17 +64,6 @@ public
       handle_pre_shipping_address
     end
   end
-
-  def handle_user_information
-    if @cart.cart_user_information
-      @user_information = @cart.cart_user_information
-    else
-      @user_information = @cart.create_cart_user_information
-    end
-    @cart.save
-    render :action => 'user_information'
-  end
-
 
   def ordered
   end
@@ -88,7 +92,7 @@ public
         quantity = params[:quantity][i].to_i
         if !(quantity > 0)
           line_item.destroy
-        else
+        else #check to see if the new quantity triggers a different price point on the item
           price = line_item.product.quantity_price(quantity) * 100
           line_item.quantity = quantity
           line_item.price_in_cents = price.to_i
@@ -96,7 +100,7 @@ public
         end
       end
       flash[:notice] = "Quantity updated successfully"
-      redirect_to cart_path
+      redirect_to params[:redirect_path] || cart_path
     end
   end
 
@@ -128,7 +132,7 @@ public
     if @person
       @person.update_attributes(params['person'])
     else
-      @person = Person.new(params['person'])
+      @person = Ansuz::NFine::Person.new(params['person'])
       @person.user = current_user if logged_in?
       @cart.person = @person
     end
@@ -136,7 +140,7 @@ public
       @address = @person.shipping_address
       @address.update_attributes(params['address'])
     else
-      @address = Address.new(params['address'])
+      @address = Ansuz::NFine::Address.new(params['address'])
       @address.address_type = 'Shipping'
       @person.addresses << @address
     end
@@ -146,7 +150,7 @@ public
     else
       @cart.reload
       @address = @person.shipping_address
-      @address ||= Address.new
+      @address ||= Ansuz::NFine::Address.new
       if params["same_as_shipping"]
         if @person && @person.shipping_address
           if @person.billing_address
@@ -168,9 +172,9 @@ public
 
   def handle_pre_shipping_address
     @person = @cart.proper_person
-    @person ||= Person.new
+    @person ||= Ansuz::NFine::Person.new
     @address = @person.shipping_address
-    @address ||= Address.new
+    @address ||= Ansuz::NFine::Address.new
     @step = 1
     render :action => 'checkout_shipping_address'
   end
@@ -180,7 +184,7 @@ public
       @address = @cart.billing_address
       @address.update_attributes(params["address"]) if params[:address]
     else
-      @address = Address.new(params["address"])
+      @address = Ansuz::NFine::Address.new(params["address"])
       @address.address_type = "Billing"
       @address.email = @cart.shipping_address.email
       @person = @cart.proper_person
@@ -205,10 +209,6 @@ public
   end
 
   def handle_process_order
-    if params[:gift_message]
-      @cart.gift_message = params[:gift_message]
-      @cart.save
-    end
     process_order = case RAILS_ENV
                     when 'development'
                       lambda{@cart.order!}
@@ -255,7 +255,7 @@ public
   end
 
   def get_order_status
-    @order = Cart.ordered.find_by_order_number params[:order_number]
+    @order = Ansuz::NFine::Cart.ordered.find_by_order_number params[:order_number]
     if @order
       if @order.email_address == params[:email_address]
         respond_to do |format|
