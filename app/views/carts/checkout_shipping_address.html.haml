@@ -1,4 +1,3 @@
-= render :partial => 'checkout_header'
 .checkout_step_1
   - form_for :address, @address, :url => { } do |f|
     .address
@@ -12,5 +11,4 @@
       %br
       = hidden_field_tag(:step, 2)
       %span.fright.continue-the-checkout
-        = image_submit_tag 'continue-checkout.png', :class => 'fright custom-buttons'
-  = render :partial => 'shared/checkout_info'
+        = image_submit_tag famfamfam_icon_path('basket_go')

@@ -5,5 +5,5 @@
 = form_field("City:<span class='required'>*</span>",  f.text_field(:city))
 = form_field("State / Province:<span class='required'>*</span>", f.text_field(:state_province))
 = form_field("Zip / Postal Code:<span class='required'>*</span>",   f.text_field(:zip_postal))
-= form_field("Country:<span class='required'>*</span>", f.country_select(:country, PREFERRED_COUNTRIES))
+= form_field("Country:<span class='required'>*</span>",    f.text_field(:country))
 = form_field "Phone Number:<span class='required'>*</span>", f.text_field(:phone_number)

@@ -4,7 +4,6 @@ module Ansuz
 
       belongs_to  :cart, :class_name => 'Ansuz::NFine::Cart'
       belongs_to  :product, :class_name => 'Ansuz::NFine::Product'
-#      has_attached_file  :attachment #TODO add relevant stuff for paperclip attaching to line items
       before_save  :calculate_total
       after_save  :save_cart
       validates_presence_of  :amount

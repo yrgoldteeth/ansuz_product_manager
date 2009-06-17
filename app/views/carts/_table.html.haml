@@ -1,30 +1,28 @@
-- include_actions = true if !local_assigns.include?(:include_actions)
-
 %table.cart
   %thead
-    %th IMAGE
-    %th DESCRIPTION
-    %th.number PRICE 
-    %th.number QTY 
-    %th.number SUBTOTAL
     %th
-  %tbody
-    - cart.line_items.each do |line_item|
-      - do_include_actions = line_item.special? ? false : include_actions 
-      = row_for_line_item(line_item, :include_actions => do_include_actions)
-.coupons
-  - if @cart.line_items.coupons.any?
-    %div Current Coupons
-
-.summary
-  - %w(subtotal).each do |field|
-    - value = cart.send(field)
-    - if value
-      %p{ :class => "cart_amount total" }
-        %b= field.humanize + ":"
-        = number_to_currency(value)
-  .cart-buttons
-    = link_to(image_tag('check-out-now.png', :class => 'fright custom-buttons'), '/carts/checkout')
-    = link_to(image_tag('bowse-more-photos.png', :class => 'fright custom-buttons'), (params[:return_path].blank?) ? "/rowing" : params[:return_path] ) 
-    .clear
-.clear
+    %th Quantity
+    %th Category
+    %th Name 
+    %th Price
+    %th
+      %tbody
+        %tr
+          - cart.line_items.each do |line_item|
+            = render :partial => 'line_item', :locals => { :line_item => line_item }
+      %tfoot
+        %tr
+          %td
+          %td
+          %td
+          %td Subtoal
+          %td 
+            = number_to_currency(cart.subtotal)
+        %tr
+          %td
+          %td
+          %td
+          %td TOTAL
+          %td 
+            = number_to_currency(cart.total)
+          

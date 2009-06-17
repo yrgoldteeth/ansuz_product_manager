@@ -1,10 +1,12 @@
 class CartsController < ApplicationController
+#  require 'ostruct'
   unloadable # This is required if you subclass a controller provided by the base rails app
   before_filter :login_required#, :only => [:ordered, :previous]
   before_filter :load_current_cart, :only => [:show, :checkout, :index, :add, :update, :apply_coupon]
   before_filter :load_cart,  :only => [:previous]
   before_filter :load_carts, :only => [:ordered]
-  before_filter :load_active_merchant_credit_card, :only => [:checkout]
+#  before_filter :load_ostruct_billing_address, :only => [:checkout]
+#  before_filter :load_active_merchant_credit_card, :only => [:checkout]
 #  helper :carts
 
   private
@@ -25,17 +27,51 @@ class CartsController < ApplicationController
     @cart = current_user.carts.find(params[:id], :include => [:line_items, { :person => [:addresses] }])
   end
 
-  def load_active_merchant_credit_card
-    @active_merchant_credit_card = ActiveMerchant::Billing::CreditCard.new(
-      params[:active_merchant_credit_card]
-    )
-    if @cart.proper_person && @cart.proper_person.billing_address
-      @active_merchant_credit_card.first_name = @cart.proper_person.billing_address.first_name
-      @active_merchant_credit_card.last_name = @cart.proper_person.billing_address.last_name
-    end
-    @active_merchant_credit_card.type ||= "visa"
-    params[:active_merchant_credit_card] ||= { :type => 'visa' }
-  end
+#  def load_ostruct_billing_address
+#    @billing_address_hash = {}
+#    @billing_address_hash["line1"] = ""
+#    @billing_address_hash["line2"] = ""
+#    @billing_address_hash["city"]  = ""
+#    @billing_address_hash["state"] = ""
+#    @billing_address_hash["zip"]   = ""
+#
+#    params[:billing_address] ||= {}
+#    params[:billing_address].each_pair do |k, v|
+#      @billing_address_hash[k] = v
+#    end
+#    if @cart && @cart.billing_address
+#      bill_addr = @cart.billing_address  
+#      @billing_address_hash["line1"] = bill_addr.line1
+#      @billing_address_hash["line2"] = bill_addr.line2
+#      @billing_address_hash["city"]  = bill_addr.city
+#      @billing_address_hash["state"] = bill_addr.state_province
+#      @billing_address_hash["zip"]   = bill_addr.zip_postal
+#    end
+#    @billing_address = OpenStruct.new(@billing_address_hash)
+#    if @cart && @cart.billing_address
+#      if @cart.billing_address
+#        bill_addr = @cart.billing_address
+#        @billing_address_hash[:address1] = bill_addr.line1
+#        @billing_address_hash[:city]  = bill_addr.city
+#        @billing_address_hash[:state] = bill_addr.state_province
+#        @billing_address_hash[:zip]   = bill_addr.zip_postal
+#        @billing_address_hash.delete('line1')
+#        @billing_address_hash.delete('line2')
+#      end
+#    end
+#  end
+
+#  def load_active_merchant_credit_card
+#    @active_merchant_credit_card = ActiveMerchant::Billing::CreditCard.new(
+#      params[:active_merchant_credit_card]
+#    )
+#    if @cart.proper_person && @cart.proper_person.billing_address
+#      @active_merchant_credit_card.first_name = @cart.proper_person.billing_address.first_name
+#      @active_merchant_credit_card.last_name = @cart.proper_person.billing_address.last_name
+#    end
+#    @active_merchant_credit_card.type ||= "visa"
+#    params[:active_merchant_credit_card] ||= { :type => 'visa' }
+#  end
 
   public
   def index
@@ -57,11 +93,9 @@ class CartsController < ApplicationController
     when 4
       handle_shipment
     when 3
-      handle_billing_address
+      handle_person_address
     when 2
-      handle_shipping_address
-    else
-      handle_pre_shipping_address
+      handle_person
     end
   end
 
@@ -170,6 +204,19 @@ class CartsController < ApplicationController
     end
   end
 
+  def handle_person
+    @person = Ansuz::NFine::Person.find_or_create_by_user_id(current_user.id)
+    @person.cart = current_user.current_cart
+    render :action => 'checkout_person'
+  end
+
+  def handle_person_address
+    @address = Ansuz::NFine::Address.new
+    @address.person = current_user.person
+    @address.cart = current_user.current_cart
+    render :action => 'checkout_person_address'
+  end
+
   def handle_pre_shipping_address
     @person = @cart.proper_person
     @person ||= Ansuz::NFine::Person.new
@@ -196,7 +243,7 @@ class CartsController < ApplicationController
     else
       #@cart.update_shipping!
       @cart.update_total!
-      #@credit_card_transaction = CreditCardTransaction.new # TODO: Implement this
+      @credit_card_transaction = CreditCardTransaction.new # TODO: Implement this
       render :action => 'checkout_shipment'
     end
   end

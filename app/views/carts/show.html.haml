@@ -6,4 +6,7 @@
   - else
     %p
       Your cart is currently empty.
+- form_tag 'carts/checkout', :method => :put do
+  = hidden_field_tag(:step, 2)
+  = submit_tag 'Checkout'
 .clear
