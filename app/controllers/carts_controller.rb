@@ -7,9 +7,10 @@ class CartsController < ApplicationController
 #  helper :carts
 
   private
-  def load_current_cart
+  def load_current_cart #for some reason, extending users with this doesn't always find their cart, but creates a new one.
     if current_user.carts.find(:first, :order=> 'id desc')
       @cart = current_user.carts.find(:first, :order => 'id desc')
+      @line_items = @cart.line_items
     else
       @cart = Ansuz::NFine::Cart.create(:user_id => current_user.id)
     end
@@ -23,6 +24,7 @@ class CartsController < ApplicationController
   end
 public
   def index
+    redirect_to :action => 'show'
   end
 
   # GET /cart/1
@@ -48,21 +50,33 @@ public
     end
   end
 
+  def handle_user_information
+    if @cart.cart_user_information
+      @user_information = @cart.cart_user_information
+    else
+      @user_information = @cart.create_cart_user_information
+    end
+    @cart.save
+    render :action => 'user_information'
+  end
+
+
   def ordered
   end
 
   def update
     case params[:form_action]
     when "Remove Selected"
-      line_item_ids = params.keys.map do |key|
-        if key =~ /select_([\d]+)/
-          $1.to_i
-        end
+    line_item_ids = params.keys.map do |key|
+      if key =~ /select_([\d]+)/
+        $1.to_i
       end
-      @line_items = LineItem.find line_item_ids
+    end
+      @line_items = Ansuz::NFine::LineItem.find line_item_ids
       @line_items.map(&:destroy)
-      flash[:notice] = "Items have been removed from cart"
-      redirect_to params[:redirect_path] || cart_path
+      @cart.update_subtotal!
+      flash[:notice] = "Item has been removed from cart"
+      redirect_to cart_path
     when "Clear Cart"
       @cart.line_items.map(&:destroy)
       @cart.update_subtotal
@@ -70,17 +84,19 @@ public
       redirect_to cart_path
     when "Update Quantity"
       params[:quantity_line_item_id].each_with_index do |line_item_id, i|
-        line_item = LineItem.find(line_item_id)
+        line_item = Ansuz::NFine::LineItem.find(line_item_id)
         quantity = params[:quantity][i].to_i
         if !(quantity > 0)
           line_item.destroy
         else
+          price = line_item.product.quantity_price(quantity) * 100
           line_item.quantity = quantity
+          line_item.price_in_cents = price.to_i
           line_item.save
         end
       end
       flash[:notice] = "Quantity updated successfully"
-      redirect_to params[:redirect_path] || cart_path
+      redirect_to cart_path
     end
   end
 
@@ -105,53 +121,6 @@ public
       end
       redirect_to :controller => 'products'
   end 
-
-    
-#    unless params[:qty].blank?
-#      params[:product_id].each_with_index do |product_id, i|
-#        qty      = params[:quantity][i].to_i
-#        photo_id = params[:photo_id][i]
-#        if params[:configuration]
-#          configuration = params[:configuration][i]
-#        end
-#        if qty > 0
-#          product = Product.find(product_id)
-#          options = {}
-#
-#          # NOTE: There were bugs associated with adding the same product, two
-#          # differing photos.  This is just not going to happen for now.
-#=begin
-#          # If the item is already in the cart, just add to the quantity
-#          if @cart.products.include?(product)
-#            old_line_item = @cart.line_item_for(product)
-#            # We'll only allow adding quantity for basic products, not configured ones, this way
-#            unless old_line_item.configuration
-#              qty = old_line_item.quantity + qty
-#              old_line_item.destroy
-#            end
-#          end
-#=end
-#
-#          options[:quantity] = qty
-#          options[:configuration] = configuration if params[:configuration]
-#          options[:photo_id] = photo_id
-#
-#          logger.info "Adding product: #{product.inspect}.  Quantity: #{qty}."
-#          @cart.add(product, options)
-#        end
-#        flash[:notice] = 'Successfully added item(s) to the cart.'
-#      end
-#    else
-#      flash[:error] = "There was a problem adding your item(s) to the cart."
-#    end
-#    redirect_back
-#  end
-
-  def track
-    if params[:q]
-      @cart = Cart.find(params[:q].to_i - Cart::ORDER_NUMBER_OFFSET)
-    end
-  end
 
   protected
   def handle_shipping_address

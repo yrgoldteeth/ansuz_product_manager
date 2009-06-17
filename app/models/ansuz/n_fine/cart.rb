@@ -3,6 +3,7 @@ module Ansuz
     class Cart < ActiveRecord::Base
 
       belongs_to  :user
+      has_one  :person, :class_name => 'Ansuz::NFine::Person'
       has_many  :line_items,  :class_name => 'Ansuz::NFine::LineItem', :dependent => :destroy
       has_many  :products, :through => :line_items
 
@@ -56,6 +57,14 @@ module Ansuz
       def update_total!
         update_total
         save
+      end
+
+      def proper_person
+        if user
+          user.person
+        else
+          person
+        end
       end
 
     end

@@ -3,8 +3,8 @@ module Ansuz
     module UserExtensions
       def self.included(base)
         base.class_eval do
-          has_one :cart_user_information, :class_name => "Ansuz::NFine::CartUserInformation"
           has_many :carts, :class_name => "Ansuz::NFine::Cart"
+          has_one :person, :class_name => "Ansuz::NFine::Person"
 
           def current_cart
             cart = self.carts.find(:first, :order => 'id desc')
