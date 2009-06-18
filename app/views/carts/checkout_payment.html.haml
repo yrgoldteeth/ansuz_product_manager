@@ -1,4 +1,3 @@
-= render :partial => 'checkout_header'
 .checkout_step_3
   %h4 Payment Information
   .sub-head
@@ -11,18 +10,9 @@
     .checkout_transition_2
     - billing_address = @cart.billing_address
     %span.internal-height
-      = render :partial => 'shared/address', :object => billing_address
+      = render :partial => 'address', :object => billing_address
       .change_info
-        = link_to "Change Billing Address", { :controller => 'carts', :action => 'checkout', :step => 2 }
-  .gift-cert-cont
-    - form_remote_tag :url => apply_coupon_url, :update => 'coupon-result' do 
-      #coupon_form
-        %label Enter your coupon or promotional code here!
-        = text_field_tag :code
-        = image_submit_tag 'redeem-code.png', :class => 'redeem-button'
-        
-    .clear
-    #coupon-result
+        = link_to "Change Billing Address", { :controller => 'carts', :action => 'checkout', :step => 3 }
   .clear
   .sub-head
     %h5
@@ -52,7 +42,7 @@
         %span.input-length
           = c.text_field(:number, :maxlength => 16)
         %span.input-middle
-          = c.select(:month, Cart::MONTHS) + c.select(:year, Cart::YEARS)
+          = c.select(:month, Ansuz::NFine::Cart::MONTHS) + c.select(:year, Ansuz::NFine::Cart::YEARS)
         %span.input-length
           = c.text_field(:verification_value, :maxlength => 4, :class => 'smallfield text')
           %span.whats-this
@@ -65,4 +55,3 @@
       = image_submit_tag 'continue-checkout.png', :class => 'fright custom-buttons'
       %br.clear
 .clear
-- @javascript_array << javascript_include_tag("checkout_payment")

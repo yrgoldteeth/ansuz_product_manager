@@ -1,4 +1,3 @@
-= render :partial => 'checkout_header'
 - shipping_address = @cart.shipping_address
 - billing_address = @cart.billing_address
 %h2.cart-head Order Confirmation
@@ -22,14 +21,14 @@
       %tr
         %td
           - if shipping_address
-            = render :partial => 'shared/address', :object => shipping_address
+            = render :partial => 'address', :object => shipping_address
             .change_info
-              = link_to "Change Shipping Address", { :controller => 'carts', :action => 'checkout', :step => 1 }
+              = link_to "Change Shipping Address", { :controller => 'carts', :action => 'checkout', :step => 4 }
         %td
           - if billing_address
-            = render :partial => 'shared/address', :object => billing_address
+            = render :partial => 'address', :object => billing_address
             .change_info
-              = link_to "Change Billing Address", { :controller => 'carts', :action => 'checkout', :step => 2 }
+              = link_to "Change Billing Address", { :controller => 'carts', :action => 'checkout', :step => 3 }
         %td
           = @active_merchant_credit_card.type.capitalize
           %br
@@ -39,7 +38,7 @@
           = "#{@active_merchant_credit_card.month}/#{@active_merchant_credit_card.year}"
           %br
           .change_info
-            = link_to "Change Payment Info", { :controller => 'carts', :action => 'checkout', :step => 4 }
+            = link_to "Change Payment Info", { :controller => 'carts', :action => 'checkout', :step => 5 }
   .clear
   #summary
     #cart.confirm
@@ -63,18 +62,11 @@
           %br.clear
           %h4.style-label
             Method:
-          %ul.shipping-select
-            %li
-              %span
-                = Cart::SHIPPING_LOOKUP[@cart.shipping_method]
-              %br.clear
-          %br.clear
           = link_to "Edit Shipping Method", { :controller => 'carts', :action => 'checkout', :step => 3 }
       %tr
         %td.shipping-sub{ :rowspan => 2 }
           Shipping
           %span#shipping-rate
-            = number_to_currency @cart.shipping_rate
   .shipping-grand
     GRAND TOTAL
     %span#grand-total
@@ -96,4 +88,3 @@
     %span.fright
       = image_submit_tag 'submit-order.png', :class => 'custom-buttons'
     %br.clear
-- @javascript_array << javascript_include_tag('checkout_confirm')

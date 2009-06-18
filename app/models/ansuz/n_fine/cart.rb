@@ -106,13 +106,13 @@ module Ansuz
         save
       end
       
-      def proper_person
-        if self.user
-          self.user.person
-        else
-          self.person
-        end
-      end
+#      def proper_person
+#        if self.user
+#          self.user.person
+#        else
+#          self.person
+#        end
+#      end
 
       def gateway
         if @gateway
@@ -177,8 +177,8 @@ module Ansuz
         end
 
         def billing_address
-          if self.proper_person
-            self.proper_person.addresses.find_by_address_type('Billing', :order => 'id DESC')
+          if self.person
+            self.person.addresses.find_by_address_type('Billing', :order => 'id DESC')
           end
         end
 
@@ -188,8 +188,8 @@ module Ansuz
         end
 
         def shipping_address
-          if self.proper_person
-            self.proper_person.addresses.find_by_address_type('Shipping', :order => 'id DESC')
+          if self.person
+            self.person.addresses.find_by_address_type('Shipping', :order => 'id DESC')
           end
         end
 
