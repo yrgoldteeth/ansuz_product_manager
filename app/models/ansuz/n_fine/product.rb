@@ -1,6 +1,8 @@
 module Ansuz
   module NFine
     class Product < ActiveRecord::Base
+      validates_presence_of :name
+      validates_numericality_of :price
       belongs_to :category, :class_name => 'Ansuz::NFine::Category'
       has_many  :quantity_discounts, :class_name => 'Ansuz::NFine::QuantityDiscount', :dependent => :destroy
       attr_accessor :qty, :details
@@ -25,7 +27,7 @@ module Ansuz
 
       #returns product's price for a given quantity.  
       def quantity_price (quantity)
-        if !self.quantity_discounts.empty? && self.existing_discount_quantity_range.min < quantity && self.existing_discount_quantity_range.max > quantity
+        if !self.quantity_discounts.empty? && self.existing_discount_quantity_range.include?(quantity)
           self.quantity_discounts.each do |q|
             quantity_range = q.low_quantity..q.high_quantity
             if quantity_range.include?(quantity)
